@@ -8,7 +8,4 @@ import java.util.List;
 
 public interface LoanOfferService {
     List<LoanOfferDTO> loanOffers(LoanApplicationRequestDTO loanApplicationRequest);
-
-//    LoanOfferDTO generateOffer(LoanApplicationRequestDTO loanApplicationRequest,
-//                               Boolean isInsuranceEnabled, Boolean isSalaryClient);
 }
