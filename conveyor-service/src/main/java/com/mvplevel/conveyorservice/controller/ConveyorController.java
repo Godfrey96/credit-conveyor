@@ -7,7 +7,6 @@ import com.mvplevel.conveyorservice.dto.ScoringDataDTO;
 import com.mvplevel.conveyorservice.service.LoanOfferService;
 import com.mvplevel.conveyorservice.service.ScoringService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,12 +27,12 @@ public class ConveyorController {
     @PostMapping("/offers")
     public ResponseEntity<List<LoanOfferDTO>> createOffers(@RequestBody LoanApplicationRequestDTO loanApplicationRequest){
         loanOfferService.loanOffers(loanApplicationRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/calculation")
     public ResponseEntity<CreditDTO> calculateCredit(@RequestBody ScoringDataDTO scoringData){
         scoringService.calCreditDTO(scoringData);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
