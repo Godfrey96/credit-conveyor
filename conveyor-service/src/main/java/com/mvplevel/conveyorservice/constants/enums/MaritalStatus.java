@@ -1,4 +1,4 @@
-package com.mvplevel.conveyorservice.enums;
+package com.mvplevel.conveyorservice.constants.enums;
 
 public enum MaritalStatus {
     MARRIED,
