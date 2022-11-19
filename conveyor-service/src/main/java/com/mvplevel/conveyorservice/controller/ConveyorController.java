@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,18 +22,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConveyorController {
 
-    private LoanOfferService loanOfferService;
-    private ScoringService scoringService;
+    private final LoanOfferService loanOfferService;
+    private final ScoringService scoringService;
 
     @PostMapping("/offers")
-    public ResponseEntity<List<LoanOfferDTO>> createOffers(@RequestBody LoanApplicationRequestDTO loanApplicationRequest){
-        loanOfferService.loanOffers(loanApplicationRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<List<LoanOfferDTO>> loanOffers(@RequestBody LoanApplicationRequestDTO loanApplication){
+        return new ResponseEntity<>(loanOfferService.loanOffers(loanApplication), HttpStatus.OK);
     }
 
     @PostMapping("/calculation")
     public ResponseEntity<CreditDTO> calculateCredit(@RequestBody ScoringDataDTO scoringData){
-        scoringService.calCreditDTO(scoringData);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(scoringService.calcCreditDto(scoringData), HttpStatus.OK);
     }
 }

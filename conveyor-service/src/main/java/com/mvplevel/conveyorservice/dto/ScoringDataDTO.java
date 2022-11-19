@@ -1,7 +1,7 @@
 package com.mvplevel.conveyorservice.dto;
 
-import com.mvplevel.conveyorservice.enums.Gender;
-import com.mvplevel.conveyorservice.enums.MaritalStatus;
+import com.mvplevel.conveyorservice.constants.enums.Gender;
+import com.mvplevel.conveyorservice.constants.enums.MaritalStatus;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -10,7 +10,6 @@ import java.time.LocalDate;
 
 @Data
 public class ScoringDataDTO {
-    @Min(value=10000, message="must be equal or greater than 10000")
     private BigDecimal amount;
     private Integer term;
     private String firstName;
