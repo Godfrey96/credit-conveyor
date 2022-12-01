@@ -38,7 +38,6 @@ public class LoanOfferService {
 
         LoanOfferDTO loanOfferDTO = new LoanOfferDTO();
 
-        loanOfferDTO.setApplicationId(generateRandomApplicationId());
         loanOfferDTO.setRequestedAmount(requestedAmount);
         loanOfferDTO.setTotalAmount(totalAmount);
         loanOfferDTO.setTerm(term);
@@ -49,10 +48,6 @@ public class LoanOfferService {
 
         return loanOfferDTO;
 
-    }
-
-    public Long generateRandomApplicationId(){
-        return new Random().nextLong();
     }
 
 }

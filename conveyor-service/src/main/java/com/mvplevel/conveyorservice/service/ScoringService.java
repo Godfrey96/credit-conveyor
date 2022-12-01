@@ -11,6 +11,10 @@ import com.mvplevel.conveyorservice.dto.ScoringDataDTO;
 import com.mvplevel.conveyorservice.exception.ScoringException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import paqua.loan.amortization.api.LoanAmortizationCalculator;
+import paqua.loan.amortization.api.impl.LoanAmortizationCalculatorFactory;
+import paqua.loan.amortization.dto.Loan;
+import paqua.loan.amortization.dto.LoanAmortization;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -138,8 +142,10 @@ public class ScoringService {
     // calculate monthly payment
     public BigDecimal calcMonthlyPayment(BigDecimal amount, BigDecimal rate, Integer term) {
 
+        log.info("Calculating the monthly payment");
+
         BigDecimal monthlyRate = calcRateMonth(rate);
-        BigDecimal monthlyRateDivAddFunc = topDiv(monthlyRate, term);
+        BigDecimal monthlyRateDivAddFunc = monthlyPaymentFormula(monthlyRate, term);
 
         return amount.multiply(monthlyRateDivAddFunc).setScale(2, RoundingMode.CEILING);
 
@@ -147,6 +153,8 @@ public class ScoringService {
 
     // calculate creditDTO
     public CreditDTO calcCreditDto(ScoringDataDTO scoringData){
+
+        log.info("Calculating the credit dto");
 
         BigDecimal rate =  calcRate(scoringData.getIsInsuranceEnabled(), scoringData.getIsSalaryClient());
         BigDecimal monthlyPayment = calcMonthlyPayment(scoringData.getAmount(), rate, scoringData.getTerm());
@@ -169,20 +177,20 @@ public class ScoringService {
     // calculate monthly payment schedule
     public List<PaymentScheduleElement> calcPaymentSchedule(ScoringDataDTO scoringData){
 
+        log.info("Calculating the payment schedule");
+
+        LocalDate paymentDate = LocalDate.now();
         BigDecimal rate = scoring(scoringData).divide(HUNDRED, 5, RoundingMode.CEILING);
         BigDecimal totalPayment = calcMonthlyPayment(scoringData.getAmount(), rate, scoringData.getTerm());
         BigDecimal remainingDebt = calcTotalCostLoan(scoringData.getAmount(), scoringData.getTerm());
-        BigDecimal monthlyInterestRate = calcRateMonth(rate);
-        int termPayments = scoringData.getTerm() * MONTHS_PER_YEAR;
-        LocalDate paymentDate = LocalDate.now();
-
+        Integer termPayments = scoringData.getTerm() * MONTHS_PER_YEAR;
         List<PaymentScheduleElement> paymentSchedule = new ArrayList<>();
 
         for (int i = 1; i <= termPayments; i++){
             paymentDate = paymentDate.plusMonths(1);
 
-            BigDecimal interestPayment = remainingDebt.multiply(monthlyInterestRate);
-            BigDecimal debtPayment = totalPayment.subtract(remainingDebt.multiply(interestPayment));
+            BigDecimal interestPayment = interestPayment(remainingDebt, rate);
+            BigDecimal debtPayment = totalPayment.subtract(interestPayment);
             remainingDebt = remainingDebt.subtract(debtPayment);
 
             paymentSchedule.add(new PaymentScheduleElement(
@@ -199,6 +207,8 @@ public class ScoringService {
 
     // calculate total cost of the loan psk
     public BigDecimal calcTotalCostLoan(BigDecimal monthlyPayment, Integer term){
+
+        log.info("Calculating the total cost of the loan");
 
         // calculate term in months :: term * 12
         Integer termInMonths = term * MONTHS_PER_YEAR;
@@ -221,7 +231,16 @@ public class ScoringService {
                 .divide(BigDecimal.valueOf(MONTHS_PER_YEAR), 5, RoundingMode.CEILING);
     }
 
-    private BigDecimal topDiv(BigDecimal monthlyRate, Integer term){
+    // calculate interest payment
+    private BigDecimal interestPayment(BigDecimal remainingDebt, BigDecimal rate){
+
+        log.info("Calculating the interest payment");
+
+        return remainingDebt.multiply(calcRateMonth(rate)).setScale(2, RoundingMode.CEILING);
+    }
+
+    // a formula to calculate monthly payment
+    private BigDecimal monthlyPaymentFormula(BigDecimal monthlyRate, Integer term){
 
         BigDecimal monthlyCalc = BigDecimal.ONE.add(monthlyRate).pow(term).subtract(BigDecimal.ONE);
         BigDecimal monthlyRateDiv = monthlyRate.divide(monthlyCalc, 5, RoundingMode.CEILING);
