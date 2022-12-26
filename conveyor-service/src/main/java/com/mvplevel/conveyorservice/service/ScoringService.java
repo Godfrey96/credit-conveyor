@@ -11,10 +11,6 @@ import com.mvplevel.conveyorservice.dto.ScoringDataDTO;
 import com.mvplevel.conveyorservice.exception.ScoringException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import paqua.loan.amortization.api.LoanAmortizationCalculator;
-import paqua.loan.amortization.api.impl.LoanAmortizationCalculatorFactory;
-import paqua.loan.amortization.dto.Loan;
-import paqua.loan.amortization.dto.LoanAmortization;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -218,10 +214,17 @@ public class ScoringService {
 
     // calculate age
     public long calcAge(ScoringDataDTO scoringData){
-        if (scoringData.getBirthDate() != null)
-            return Period.between(scoringData.getBirthDate(), LocalDate.now()).getYears();
-        else
-            throw new ScoringException("Age cannot be less than 18 years");
+        if (scoringData.getBirthDate() != null){
+            int age = Period.between(scoringData.getBirthDate(), LocalDate.now()).getYears();
+
+            if (age >= 18)
+                return age;
+            else
+                throw new ScoringException("Age cannot be less than 18");
+        }
+        else{
+            throw new ScoringException("Age cannot be null");
+        }
     }
 
     // calculate rate month
