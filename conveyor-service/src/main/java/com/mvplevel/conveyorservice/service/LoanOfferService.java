@@ -36,17 +36,15 @@ public class LoanOfferService {
         BigDecimal monthlyPayment = scoringService.calcMonthlyPayment(requestedAmount, rate, term);
         BigDecimal totalAmount = scoringService.calcTotalCostLoan(monthlyPayment, term);
 
-        LoanOfferDTO loanOfferDTO = new LoanOfferDTO();
-
-        loanOfferDTO.setRequestedAmount(requestedAmount);
-        loanOfferDTO.setTotalAmount(totalAmount);
-        loanOfferDTO.setTerm(term);
-        loanOfferDTO.setMonthlyPayment(monthlyPayment);
-        loanOfferDTO.setRate(rate);
-        loanOfferDTO.setIsInsuranceEnabled(isInsuranceEnabled);
-        loanOfferDTO.setIsSalaryClient(isSalaryClient);
-
-        return loanOfferDTO;
+        return LoanOfferDTO.builder()
+                .applicationId(1L)
+                .requestedAmount(loanApplicationDTO.getAmount())
+                .totalAmount(totalAmount)
+                .term(loanApplicationDTO.getTerm())
+                .monthlyPayment(monthlyPayment)
+                .rate(rate)
+                .isInsuranceEnabled(isInsuranceEnabled)
+                .isSalaryClient(isSalaryClient).build();
 
     }
 

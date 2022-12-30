@@ -101,8 +101,4 @@ public class ScoringServiceTest {
         assertThat(scoringService.calcTotalCostLoan(amount, term)).isEqualTo(totalCostExpected);
     }
 
-
-
-
-
 }

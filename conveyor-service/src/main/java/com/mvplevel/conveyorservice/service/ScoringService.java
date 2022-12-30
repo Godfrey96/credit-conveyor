@@ -116,7 +116,7 @@ public class ScoringService {
             log.info("rate is reduced by 3 because gender is FEMALE and between 35 to 60 of age");
             currRate = currRate.subtract(BigDecimal.valueOf(3));
         }
-        if ((scoringData.getGender() == Gender.MALE) && (currAge >= 3 && currAge <= 55)){
+        if ((scoringData.getGender() == Gender.MALE) && (currAge >= 30 && currAge <= 55)){
             log.info("rate is reduced by 3 because gender is MALE and between 3 to 55 of age");
             currRate = currRate.subtract(BigDecimal.valueOf(3));
         }
@@ -247,6 +247,11 @@ public class ScoringService {
 
         BigDecimal monthlyCalc = BigDecimal.ONE.add(monthlyRate).pow(term).subtract(BigDecimal.ONE);
         BigDecimal monthlyRateDiv = monthlyRate.divide(monthlyCalc, 5, RoundingMode.CEILING);
+
+        if (monthlyRateDiv.equals(BigDecimal.ZERO)){
+            log.error("Cannot divide by zero");
+        }
+
         BigDecimal monthlyRateAdd = monthlyRate.add(monthlyRateDiv);
 
         return monthlyRateAdd;
